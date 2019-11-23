@@ -4,3 +4,4 @@ python-dotenv~=0.10.1
 python-telegram-bot[socks]~=12.2.0
 pathlib
 vk_api
+dialogflow
