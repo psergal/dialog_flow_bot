@@ -1,10 +1,30 @@
+import requests
 import os
 from dotenv import load_dotenv
 import logging
+import telegram.ext
 from telegram.ext import Updater
 from telegram.ext import CommandHandler
 from telegram.ext import MessageHandler, Filters
 import dialogflow_v2beta1 as dialogflow
+import time
+import sys
+
+
+class TelegramLogsHandler(logging.Handler):
+    def __init__(self, telegram_token, telegram_chat_id):
+        super().__init__()
+        self.telegram_token = telegram_token
+        self.telegram_chat_id = telegram_chat_id
+        self.telegram_bot = telegram.Bot(self.telegram_token)
+        self.telegram_bot.send_message(chat_id=self.telegram_chat_id, text=f'bot has started at {time.ctime()}')
+
+    def emit(self, record):
+        log_entry = self.format(record)
+        if isinstance(record.exc_info, tuple) and record.exc_info[0] == requests.exceptions.ConnectionError:
+            return
+        else:
+            self.telegram_bot.send_message(chat_id=self.telegram_chat_id, text=f'{log_entry}')
 
 
 def detect_intent_texts(project_id, session_id, text, language_code):
@@ -53,7 +73,22 @@ def call_bot(telegram_token):
 if __name__ == '__main__':
     load_dotenv()
     tlg_token = os.environ['TLG_TOKEN']
-    logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                        level=logging.INFO)
-    logger = logging.getLogger(__name__)
+
+    svc_tlg_token = os.environ['SVC_TLG_TOKEN']
+    svc_chat_id = os.environ['TLG_CHAT_ID']
+
+    log_format = "%(levelname)s %(asctime)s - %(funcName)s - %(message)s"
+    formatter = logging.Formatter(log_format)
+
+    logger = logging.getLogger("bot_logger")
+    tlg_handler = TelegramLogsHandler(svc_tlg_token, svc_chat_id)
+    tlg_handler.setLevel(logging.ERROR)
+    tlg_handler.setFormatter(formatter)
+    logger.addHandler(tlg_handler)
+
+    stdout_handler = logging.StreamHandler(sys.stdout)
+    stdout_handler.setLevel(logging.INFO)
+    stdout_handler.setFormatter(formatter)
+    logger.addHandler(stdout_handler)
+
     call_bot(tlg_token)

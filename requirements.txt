@@ -5,3 +5,4 @@ python-telegram-bot[socks]~=12.2.0
 pathlib
 vk_api
 dialogflow
+requests~=2.22.0
