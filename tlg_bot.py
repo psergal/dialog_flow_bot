@@ -17,7 +17,7 @@ class TelegramLogsHandler(logging.Handler):
         self.telegram_token = telegram_token
         self.telegram_chat_id = telegram_chat_id
         self.telegram_bot = telegram.Bot(self.telegram_token)
-        self.telegram_bot.send_message(chat_id=self.telegram_chat_id, text=f'bot has started at {time.ctime()}')
+        self.telegram_bot.send_message(chat_id=self.telegram_chat_id, text=f'Telegram bot has started at {time.ctime()}')
 
     def emit(self, record):
         log_entry = self.format(record)

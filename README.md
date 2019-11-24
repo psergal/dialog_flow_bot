@@ -10,6 +10,7 @@ and [Telegram](https://tlgrm.ru/) Messenger.
 For local installation use requirements:  
  `$pip install requirements.txt`  
 Follow by this instruction [instructions: how-do-i-create-a-bot](https://core.telegram.org/bots/faq#how-do-i-create-a-bot).
+Repeat it twice one Bot will serve for customers and the second one will send errors to you.
 Get chat_id which equal to user Id from the special Bot _@userinfobot_.
 Create project in the [GCP](https://cloud.google.com/dialogflow/docs/quick/setup)
 Create Google service account and store `Google credential.json` locally
@@ -20,6 +21,8 @@ Create `.env` file with settings:
 * DF_PROJECT
 * GOOGLE_APPLICATION_CREDENTIALS
 * VK_GROUP
+* SVC_TLG_TOKEN
+* TLG_CHAT_ID
 * HTTPS_PROXY (it is needed only to circumvent some country's restrictions)
    
 ## Google DialogFlow
