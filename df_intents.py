@@ -5,6 +5,7 @@ import dialogflow_v2beta1 as dialogflow
 from dotenv import load_dotenv
 import os
 
+
 def get_args():
     parser = argparse.ArgumentParser(description='DialogFlow Intent`s handling')
     parser.add_argument('--intents_mode', default='upload', choices=['upload', 'download'],
@@ -17,8 +18,8 @@ def get_args():
         'Content-Type': 'application/json;charset=UTF-8',
     },  help=argparse.SUPPRESS)
     parser.add_argument('--q_fname', default='questions.json',  help='Set file name for questions')
-    args = parser.parse_args()
-    return args
+    arguments = parser.parse_args()
+    return arguments
 
 
 def load_questions(q_list_url, headers, q_fname):
@@ -34,7 +35,7 @@ def list_intents(project_id):
     intents_client = dialogflow.IntentsClient()
     parent = intents_client.project_agent_path(project_id)
     intents = intents_client.list_intents(parent)
-    intents_list= [intent.display_name for intent in intents]
+    intents_list = [intent.display_name for intent in intents]
     return intents_list
 
 
@@ -66,7 +67,7 @@ def create_intent(project_id, display_name, training_phrases_parts,
 
 if __name__ == '__main__':
     args = get_args()
-    if args.intents_mode ==  'download':
+    if args.intents_mode == 'download':
         load_questions(args.q_list_url, args.headers, args.q_fname)
     elif args.intents_mode == 'upload':
         load_dotenv()
@@ -74,11 +75,9 @@ if __name__ == '__main__':
         existed_intents = list_intents(df_project)
         with open(args.q_fname, 'r', encoding='UTF-8') as questions:
             df_questions = json.load(questions)
-        for intent_name, tranings in df_questions.items():
+        for intent_name, trainings in df_questions.items():
             if intent_name not in existed_intents:
-                df_response = create_intent(df_project, intent_name, tranings['questions'], [tranings['answer']])
+                df_response = create_intent(df_project, intent_name, trainings['questions'], [trainings['answer']])
                 print(f'Intent created: {df_response.display_name}')
             else:
                 print(f' intent:{intent_name} - already exists')
-
-
